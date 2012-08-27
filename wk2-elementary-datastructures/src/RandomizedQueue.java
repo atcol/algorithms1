@@ -48,20 +48,16 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
     
     private Node<Item> first = null;
-    private Node<Item> middle = null;
     private int size = 0;
 
     public RandomizedQueue() {
-        // construct an empty randomized queue
     }
 
     public boolean isEmpty() {
-        // is the queue empty?
         return size == 0;
     }
 
     public int size() {
-        // return the number of items on the queue
         return size;
     }
 
@@ -86,13 +82,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         final int randomItem = StdRandom.uniform(size);
         Node<Item> node = null;
-        if (randomItem > (size / 2)) {
-            node = middle;
-        } else {
-            node = first;
-        }
-        Node<Item> prev = null;
+        
         int i = 0;
+        node = first;
+        Node<Item> prev = null;
         while (i < randomItem) {
             prev = node;
             node = node.next;
@@ -112,12 +105,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
-        // return (but do not delete) a random item
         return randomNode().item;
     }
 
     public Iterator<Item> iterator() {
-        // return an independent iterator over items in random order
         return new NodeIterator<Item>(this);
     }
     
