@@ -117,25 +117,62 @@ public class RandomizedQueueTest {
     public void testSampleThrowsWhenEmpty() {
         q.sample();
     }
+    
+    @Test
+    public void testIteratorSmall() {
+        final int N = 10;
+        for (int i = 0; i < N; i++) {
+            q.enqueue(i);
+        }
+    
+        Assert.assertEquals(N, q.size());
+        final Iterator<Integer> it = q.iterator();
+        Assert.assertTrue("Iterator should have items", it.hasNext());
+        int i = 0;
+        while (it.hasNext()) {
+            i++;
+            it.next();
+        }
+        Assert.assertEquals(N, i);
+    }
+    
+    @Test
+    public void testResizingArray() {
+        final int N = 20;
+        for (int i = 0; i < N; i++) {
+            q.enqueue(i);
+        }
+ 
+        // now remove 3/4
+        final double threeQuartersN = (N / 4) * 3;
+        for (int i = 0; i < threeQuartersN; i++) {
+            q.dequeue();
+        }
+        
+        // we now have a quarter left. 
+        // internal array SHOULD be N/2
+        // N/4 items left
+        final int quarterN = N / 4;
+        Assert.assertEquals(quarterN, q.size());
+    }
 
     @Test
-    public void testIterator() {
+    public void testIteratorTime() {
         for (int i = 1; i < 1000; i++) {
             q.enqueue(i);
         }
         
         Assert.assertEquals(999, q.size());
         final Iterator<Integer> it = q.iterator();
-        Assert.assertTrue(it.hasNext());
+        Assert.assertTrue("Iterator should have items", it.hasNext());
         
         while (it.hasNext()) {
+            final long start = System.currentTimeMillis();
             final int item = it.next();
+            final long cost = System.currentTimeMillis()-start;
             Assert.assertTrue(String.format(
-                    "%s item should be > 0", item),
-                    0 < item);
-            Assert.assertTrue(String.format(
-                    "%s item should be < 1000", item),
-                    item < 1000);
+                    "dequed cost %s for %s", cost, item),
+                    cost < 100);
         }
         
         Assert.assertEquals("Iterator should be independent of queue",
@@ -336,25 +373,183 @@ public class RandomizedQueueTest {
         return System.currentTimeMillis() - start;
     }
     
+
     @Test
-    public void testResizing() {
-        // 1 1 2 2 3 3 4 4
-        int N = 5;
+    public void testRandomFavourEnqueue() {
+        final double p1 = 0.9f, p2 = 0.1f;
+        
+        long start = System.currentTimeMillis();
+        int expectedSize = runProbabilityTest(q, 5, p1, p2);
+        Assert.assertEquals(expectedSize, q.size());
+        long end = System.currentTimeMillis() - start;
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+        
+        int previousQSize = q.size();
+        start = System.currentTimeMillis();
+        expectedSize = runProbabilityTest(q, 50, p1, p2);
+        end = System.currentTimeMillis() - start;
+        Assert.assertEquals(String.format(
+                "%s + %s should == %s", 
+                previousQSize, expectedSize, q.size()),
+                previousQSize + expectedSize, q.size());
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+        
+        previousQSize = q.size();
+        start = System.currentTimeMillis();
+        expectedSize = runProbabilityTest(q, 500, p1, p2);
+        end = System.currentTimeMillis() - start;
+        Assert.assertEquals(String.format(
+                "%s + %s should == %s", 
+                previousQSize, expectedSize, q.size()),
+                previousQSize + expectedSize, q.size());
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+        
+        previousQSize = q.size();
+        start = System.currentTimeMillis();
+        expectedSize = runProbabilityTest(q, 1000, p1, p2);
+        end = System.currentTimeMillis() - start;
+        Assert.assertEquals(String.format(
+                "%s + %s should == %s", 
+                previousQSize, expectedSize, q.size()),
+                previousQSize + expectedSize, q.size());
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+    }
+    
+    @Test
+    public void testRandomFavourEnqueueThenFavourDeque() {
+        double p1 = 0.9f, p2 = 0.1f;
+        
+        long start = System.currentTimeMillis();
+        int expectedSize = runProbabilityTest(q, 5, p1, p2);
+        Assert.assertEquals(expectedSize, q.size());
+        long end = System.currentTimeMillis() - start;
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+        
+        int previousQSize = q.size();
+        start = System.currentTimeMillis();
+        expectedSize = runProbabilityTest(q, 50, p1, p2);
+        end = System.currentTimeMillis() - start;
+        Assert.assertEquals(String.format(
+                "%s + %s should == %s", 
+                previousQSize, expectedSize, q.size()),
+                previousQSize + expectedSize, q.size());
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+        
+        previousQSize = q.size();
+        start = System.currentTimeMillis();
+        expectedSize = runProbabilityTest(q, 500, p1, p2);
+        end = System.currentTimeMillis() - start;
+        Assert.assertEquals(String.format(
+                "%s + %s should == %s", 
+                previousQSize, expectedSize, q.size()),
+                previousQSize + expectedSize, q.size());
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+        
+        previousQSize = q.size();
+        start = System.currentTimeMillis();
+        expectedSize = runProbabilityTest(q, 1000, p1, p2);
+        end = System.currentTimeMillis() - start;
+        Assert.assertEquals(String.format(
+                "%s + %s should == %s", 
+                previousQSize, expectedSize, q.size()),
+                previousQSize + expectedSize, q.size());
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+        
+        p1 = 0.1;
+        p2 = 0.9;
+        
+        previousQSize = q.size();
+        start = System.currentTimeMillis();
+        expectedSize = runProbabilityTest(q, 5, p1, p2);
+        end = System.currentTimeMillis() - start;
+        Assert.assertEquals(String.format(
+                "%s + %s should == %s", 
+                previousQSize, expectedSize, q.size()),
+                previousQSize + expectedSize, q.size());
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+        
+        previousQSize = q.size();
+        start = System.currentTimeMillis();
+        expectedSize = runProbabilityTest(q, 50, p1, p2);
+        end = System.currentTimeMillis() - start;
+        Assert.assertEquals(String.format(
+                "%s + %s should == %s", 
+                previousQSize, expectedSize, q.size()),
+                previousQSize + expectedSize, q.size());
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+        
+        previousQSize = q.size();
+        start = System.currentTimeMillis();
+        expectedSize = runProbabilityTest(q, 500, p1, p2);
+        end = System.currentTimeMillis() - start;
+        Assert.assertEquals(String.format(
+                "%s + %s should == %s", 
+                previousQSize, expectedSize, q.size()),
+                previousQSize + expectedSize, q.size());
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+        
+        previousQSize = q.size();
+        start = System.currentTimeMillis();
+        expectedSize = runProbabilityTest(q, 1000, p1, p2);
+        end = System.currentTimeMillis() - start;
+        Assert.assertEquals(String.format(
+                "%s + %s should == %s", 
+                previousQSize, expectedSize, q.size()),
+                previousQSize + expectedSize, q.size());
+        Assert.assertTrue(String.format(
+            "%s should be < 100", end),
+            end < 100);
+    }
+    
+    private int runProbabilityTest(
+            final RandomizedQueue<Integer> rq, final int N,
+            final double p1, final double p2) {
+        int p1Calls = 0; // total enqueue
+        int p2Calls = 0; // total dequeue
+        
         for (int i = 0; i < N; i++) {
-            q.enqueue(i);
-            q.dequeue();
+            final double random = StdRandom.uniform();
+            if (p1 > random) {
+                p1Calls++;
+                rq.enqueue(i);
+                continue;
+            } 
         }
-//        final float p1 = 0.9f;
-//        final float p2 = 0.1f;
-//        for (int i = 0; i < 100; i++) {
-//            for (int j = 0; j < p1 * 10; j++) {
-//                q.enqueue(i);
-//            }
-//            for (int j = 0; j < p2 * 10; j++) {
-//                q.dequeue();
-//            }
-//        }
-//        Assert.assertTrue(condition);
+        
+        final int totalAdded = p1Calls;
+        
+        for (int i = 0; i < totalAdded; i++) {
+            final double random = StdRandom.uniform();
+            if (p2 > random) {
+                p2Calls++;
+                rq.dequeue();
+                continue;
+            }
+        }
+        
+        return totalAdded - p2Calls;
     }
     
 //    @Test
@@ -382,49 +577,5 @@ public class RandomizedQueueTest {
 //        final double meanTries = StdStats.mean(triesArray);
 //        Assert.assertTrue(String.format("Mean tries %s must be > 0", meanTries),
 //                meanTries > 0);
-//    }
-//    private int runProbabilityTest(
-//            final Deque<String> dq, final int N,
-//            final double p1, final double p2,
-//            final double p3, final double p4) {
-//        int p1Calls = 0; // total addFirst
-//        int p2Calls = 0; // total removeFirst
-//        int p3Calls = 0; // total addLast
-//        int p4Calls = 0; // total removeLast
-//        
-//        for (int i = 0; i < N; i++) {
-//            final double random = StdRandom.uniform();
-//            if (p1 > random) {
-//                p1Calls++;
-//                dq.addFirst(String.valueOf(i));
-//                continue;
-//            } 
-//            
-//            if (p3 > random) {
-//                p3Calls++;
-//                dq.addLast(String.valueOf(i));
-//                continue;
-//            }
-//        }
-//        
-//        final int totalAdded = p1Calls + p3Calls;
-//        
-//        for (int i = 0; i < totalAdded; i++) {
-//            final double random = StdRandom.uniform();
-//            if (p2 > random) {
-//                p2Calls++;
-//                dq.removeFirst();
-//                continue;
-//            }
-//            
-//            if (p4 > random) {
-//                p4Calls++;
-//                dq.removeLast();
-//                continue;
-//            }
-//        }
-//        
-//        final int totalRemoved = p2Calls + p4Calls;
-//        return totalAdded - totalRemoved;
 //    }
 }

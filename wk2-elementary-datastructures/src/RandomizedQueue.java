@@ -3,18 +3,15 @@ import java.util.NoSuchElementException;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
     
+    private static final String UNCHECKED = "unchecked";
+
     private static final class NodeIterator<Item> implements Iterator<Item> {
         private final RandomizedQueue<Item> q;
 
         public NodeIterator(final RandomizedQueue<Item> queue) {
             q = new RandomizedQueue<Item>();
-            if (queue != null && queue.first != null) {
-                Node<Item> nodeToCopy = queue.first;
-                q.enqueue(nodeToCopy.item);
-                while (nodeToCopy.next != null) {
-                    q.enqueue(nodeToCopy.next.item);
-                    nodeToCopy = nodeToCopy.next;
-                }
+            while (q.size() != queue.size()) {
+                q.enqueue(queue.sample());
             }
         }
         
@@ -37,20 +34,12 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
     }
 
-    private static final class Node<Item> {
-        private Item item;
-        private Node<Item> next;
-        
-        public Node(final Item i, final Node<Item> n) {
-            item = i;
-            next = n;
-        }
-    }
+    private Item[] items;
     
-    private Node<Item> first = null;
     private int size = 0;
 
     public RandomizedQueue() {
+        items = newItemsArray(16);
     }
 
     public boolean isEmpty() {
@@ -66,60 +55,88 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             throw new NullPointerException();
         }
         // add the item
+        if (size == items.length) {
+            // resize array
+            final int newSize = items.length * 2;
+            final Item[] newItems = newItemsArray(newSize);
+            int c = 0;
+            for (Item i : items) {
+                newItems[c] = i;
+                c++;
+            }
+            items = newItems;
+        } 
+        items[size] = item;
         size++;
-        if (first == null) {
-            first = new Node<Item>(item, null);
-        } else {
-            final Node<Item> oldFirst = first;
-            final Node<Item> newFirst = new Node<Item>(item, oldFirst);
-            first = newFirst;
-        }
     }
+
 
     public Item dequeue() {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
-        final int randomItem = StdRandom.uniform(size);
-        Node<Item> node = null;
         
-        int i = 0;
-        node = first;
-        Node<Item> prev = null;
-        while (i < randomItem) {
-            prev = node;
-            node = node.next;
+        Item randomItem = dequeRandomItem();
+        size--;
+        
+        final int quarterOfLength = items.length / 4;
+        if (size ==  quarterOfLength) {
+            shrinkItems(items.length / 2);
+        }
+        return randomItem;
+    }
+
+    private void shrinkItems(final int newSize) {
+        // shrink items to half its length 
+        final Item[] newItems = newItemsArray(newSize);
+        int i = 0, j = 0;
+        while (i < items.length) {
+            final Item item = items[i];
+            if (item != null) {
+                newItems[j] = item;
+                j++;
+            }
             i++;
         }
-        if (prev != null) {
-            prev.next = node.next; // "wipe" out the random node
-        } else {
-            // prev is null, we're at 0
-            first = node.next;
-        }
-        size--;
-        return node.item;
+//        int c = 0;
+//        while (c < newSize) {
+//            final Item item = items[c];
+//            if (item != null) {
+//                newItems[c] = item;
+//            }
+//                c++;
+//        }
+        items = newItems;
     }
 
     public Item sample() {
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
-        return randomNode().item;
+        return randomItem();
     }
 
     public Iterator<Item> iterator() {
         return new NodeIterator<Item>(this);
     }
     
-    private Node<Item> randomNode() {
-        final int randomItem = StdRandom.uniform(size);
-        Node<Item> node = first;
-        int i = 0;
-        while (i < randomItem) {
-            node = node.next;
-            i++;
-        }
-        return node;
+    private Item randomItem() {
+        final int randomItemIdx = StdRandom.uniform(size);
+        return items[randomItemIdx];
     }
+    
+    @SuppressWarnings(UNCHECKED) private Item[] newItemsArray(final int newSize) {
+        return (Item[]) new Object[newSize];
+    }
+    
+    private Item dequeRandomItem() {
+        int randomItemIdx = StdRandom.uniform(items.length);
+        Item randomItem = null;
+        while ((randomItem = items[randomItemIdx]) == null) {
+            randomItemIdx = StdRandom.uniform(items.length);
+        }
+        items[randomItemIdx] = null;
+        return randomItem;
+    }
+
 }
