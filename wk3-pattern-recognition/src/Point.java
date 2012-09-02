@@ -15,13 +15,18 @@ import java.util.Comparator;
 public class Point implements Comparable<Point> {
 
     // compare points by slope
-    public final Comparator<Point> SLOPE_ORDER;       // YOUR DEFINITION HERE
+    public final Comparator<Point> SLOPE_ORDER = new Comparator<Point>() {
+		@Override
+		public int compare(Point arg0, Point arg1) {
+			return 0;
+		}
+	};
 
     private final int x;                              // x coordinate
     private final int y;                              // y coordinate
 
     // create the point (x, y)
-    public Point(int x, int y) {
+    public Point(final int x, final int y) {
         /* DO NOT MODIFY */
         this.x = x;
         this.y = y;
@@ -34,20 +39,29 @@ public class Point implements Comparable<Point> {
     }
 
     // draw line between this point and that point to standard drawing
-    public void drawTo(Point that) {
+    public void drawTo(final Point that) {
         /* DO NOT MODIFY */
         StdDraw.line(this.x, this.y, that.x, that.y);
     }
 
     // slope between this point and that point
-    public double slopeTo(Point that) {
-        /* YOUR CODE HERE */
+    public double slopeTo(final Point that) {
+//		(y1 − y0) / (x1 − x0)
+    	final double result = (double) (that.y - this.y) / (that.x - this.x);
+    	return result == Double.NaN ? Double.NEGATIVE_INFINITY : result;
     }
 
     // is this point lexicographically smaller than that one?
     // comparing y-coordinates and breaking ties by x-coordinates
-    public int compareTo(Point that) {
-        /* YOUR CODE HERE */
+    public int compareTo(final Point that) {
+    	if (this.y == that.y && this.x == that.x) {
+    		return 0; // same
+    	} else if (this.y < that.y 
+    			|| (this.y == that.y && this.x < that.x)) {
+    		return -1;
+    	} else {
+    		return 1;
+    	}
     }
 
     // return string representation of this point
@@ -57,7 +71,7 @@ public class Point implements Comparable<Point> {
     }
 
     // unit test
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         /* YOUR CODE HERE */
     }
 }
