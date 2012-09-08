@@ -1,0 +1,1 @@
+java -cp bin:../stdlib.jar Fast $1
