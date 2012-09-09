@@ -1,21 +1,38 @@
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 public class Board {
 	private final int[][] b;
 	private final int N;
-	private final int highestNumber;
+	private final int hBlock;
 	private final int manhattan;
+	private final Set<Board> neighbours = new HashSet<Board>();
+	
+	private Comparator<Board> COMPARATOR = new Comparator<Board>() {
+		@Override
+		public int compare(final Board b1, final Board b2) {
+			final Board t = Board.this;
+			return 0;
+		}
+	};
 	
 	public Board(final int[][] blocks) {
 		// construct a board from an N-by-N array of blocks
 		// (where blocks[i][j] = block in row i, column j)
-		this.b = new int[blocks.length][blocks.length];
-		this.N = b.length;
-		this.highestNumber = b.length * b.length;
-		for (int i = 0; i < blocks.length; i++) {
-			System.arraycopy(blocks[i], 0, this.b[i], 0, blocks[i].length);
-		}
-		this.manhattan = calcManhattan();
+		this(blocks, true);
 	}
 
+	private Board(final int[][] blocks, final boolean copy) {
+		if (copy) this.b = new int[blocks.length][blocks.length];
+		else this.b = blocks;
+		this.N = b.length;
+		this.hBlock = b.length * b.length;
+		if (copy) copy(blocks, this.b);
+		this.manhattan = calcManhattan();
+	}
+	
 	public int dimension() {
 		return N;
 	} // board dimension N
@@ -25,7 +42,7 @@ public class Board {
 		int c = 1;
 		for (int i = 0; i < b.length; i++) {
 			for (int j = 0; j < b.length; j++) {
-				if (c == highestNumber) {
+				if (c == hBlock) {
 					// don't test last item as already done
 					break;
 				}
@@ -66,7 +83,7 @@ public class Board {
 		for (int i = 0; i < b.length; i++) {
 			for (int j = 0; j < b.length; j++) {
 				final int block = b[i][j];
-				if (c >= highestNumber) break;
+				if (c >= hBlock) break;
 				if (block != c) return false;
 				c++;
 			}
@@ -75,8 +92,29 @@ public class Board {
 	} // is this board the goal board?
 
 	public Board twin() {
-		final int r1 = rand();
-		return null;
+		int x = StdRandom.uniform(N);
+		int y = StdRandom.uniform(N);
+		while (b[x][y] == 0) {
+			x = StdRandom.uniform(N);
+			y = StdRandom.uniform(N);
+		}
+		final int block = b[x][y];
+		final int[][] blocks = new int[b.length][b.length];
+		copy(this.b, blocks);
+		
+		// now find adjacent
+		if (y+1 < N) {
+			// swap with block below
+			final int swap = blocks[x][y+1];
+			blocks[x][y+1] = block;
+			blocks[x][y] = swap;
+		} else if (y-1 >= 0) {
+			// swap with block above
+			final int swap = blocks[x][y-1];
+			blocks[x][y-1] = block;
+			blocks[x][y] = swap;
+		}
+		return new Board(blocks, false);
 	} // a board obtained by exchanging two adjacent blocks in the same row
 
 	public boolean equals(final Object y) {
@@ -98,7 +136,12 @@ public class Board {
 	} // does this board equal y?
 
 	public Iterable<Board> neighbors() {
-		return null;
+		return new Iterable<Board>() {
+			@Override
+			public Iterator<Board> iterator() {
+				return null;
+			}
+		};
 	} // all neighbouring boards
 
 	@Override
@@ -113,16 +156,6 @@ public class Board {
 	    }
 	    return s.toString();
 	}
-	
-	private int rand() {
-		int rX = StdRandom.uniform(N);
-		int rY = StdRandom.uniform(N);
-		while (b[rX][rY] == 0) {
-			rX = StdRandom.uniform(N);
-			rY = StdRandom.uniform(N);
-		}
-		return b[rX][rY];
-	}
 
 	private int toY(final int block, int bX) {
 		return Math.abs(block - (bX * N));
@@ -131,5 +164,10 @@ public class Board {
 	private int toX(final int block) {
 		return Math.round(block / N);
 	}
-
+	
+	private void copy(final int[][] blocks, int[][] dest) {
+		for (int i = 0; i < blocks.length; i++) {
+			System.arraycopy(blocks[i], 0, dest[i], 0, blocks[i].length);
+		}
+	}
 }
