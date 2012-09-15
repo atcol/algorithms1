@@ -1,16 +1,14 @@
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
-public class Board implements Comparable<Board> {
-
+public class Board {
+    
     private final int[][] b;
     private final int N;
     private final int hBlock;
     private final int manhattan;
-    private final SortedSet<Board> neighbours = new TreeSet<Board>();
+    private final Set<Board> neighbours = new HashSet<Board>();
     
     public Board(final int[][] blocks) {
         this(blocks, true);
@@ -159,10 +157,12 @@ public class Board implements Comparable<Board> {
     public Board twin() {
         int x = StdRandom.uniform(N);
         int y = StdRandom.uniform(N);
+
         while (b[x][y] == 0) {
             x = StdRandom.uniform(N);
             y = StdRandom.uniform(N);
         }
+
         final int block = b[x][y];
         final int[][] blocks = new int[b.length][b.length];
         copy(this.b, blocks);
@@ -217,35 +217,12 @@ public class Board implements Comparable<Board> {
         return true;
     } // does this board equal y?
     
-    @Override
-    public int compareTo(final Board that) {
-        if (that == null) {
-            throw new NullPointerException();
-        }
-        if (this == that) {
-            return 0;
-        }
-        
-        final int mh = manhattan();
-        final int hm = hamming();
-        if (mh < that.manhattan() || hm < that.hamming()) {
-            return -1;
-        } else if (mh > that.manhattan() || hm > that.hamming()) {
-            return 1;
-        }
-        return 0;
-    }
-
     private Block findZero() {
-        int x = 0;
-        int y = 0;
         for (int i = 0; i < this.b.length; i++) {
             for (int j = 0; j < this.b.length; j++) {
-                if (b[x][y] == 0) {
-                    return new Block(x, y);
+                if (b[i][j] == 0) {
+                    return new Block(i, j);
                 }
-                x++;
-                y++;
             }
         }
         throw new IllegalStateException("Couldn't find zero-th element!");
@@ -255,10 +232,10 @@ public class Board implements Comparable<Board> {
         return Math.abs(block - (bX * N));
     }
 
-    private int toX(final int block) {
+    private int toX(final float block) {
         return Math.round(block / N);
     }
-    
+
     private void copy(final int[][] blocks, int[][] dest) {
         for (int i = 0; i < blocks.length; i++) {
             System.arraycopy(blocks[i], 0, dest[i], 0, blocks[i].length);

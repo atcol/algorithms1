@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -153,6 +154,59 @@ public class BoardTests {
         Assert.assertFalse("Board A reports that it is the goal board.", A.isGoal());
         Assert.assertFalse("Board B reports that it is the goal board.", B.isGoal());
     }
+    
+    @Test
+    public void testTwin2x2() {
+        final int[][] easyPuzArray = {{2, 0}, {1, 3}};
+        final int[][] easyPuzArrayTwin = {{2, 0}, {3, 1}};
+        final Board b = new Board(easyPuzArray);
+        final Board twinBoard = new Board(easyPuzArrayTwin);
+        Assert.assertEquals(twinBoard, b.twin());
+        Assert.assertEquals(b, twinBoard.twin());
+    }
+    
+    @Test
+    public void testTwin3x3() {
+        final int[][] brdArray = {{ 1, 2, 3 }, { 4, 5, 6 }, { 7, 0, 8 }};
+        final Board b = new Board(brdArray);
+//        final List<Board> possibleTwins = new ArrayList<Board>();
+        
+//        possibleTwins.add(new Board(
+//              new int[][] {{ 2, 1, 3 }, { 4, 5, 6 }, { 7, 0, 8 }}));
+//        possibleTwins.add(new Board(
+//              new int[][] {{ 1, 2, 3 }, { 5, 4, 6 }, { 7, 0, 8 }}));
+//        possibleTwins.add(new Board(
+//              new int[][] {{ 1, 2, 3 }, { 4, 6, 5 }, { 0, 7, 8 }}));
+        
+        final Board twin = new Board(
+              new int[][] {{ 2, 1, 3 }, { 4, 5, 6 }, { 7, 0, 8 }});
+        for (int i = 0; i < 100; i++) {
+            final Board actualTwin = b.twin();
+            Assert.assertEquals("actualTwin = " + actualTwin,
+                    twin, actualTwin);
+        }
+
+//        possibleTwins.add(new Board(
+//                new int[][] {{ 2, 1, 3 }, { 4, 5, 6 }, { 7, 0, 8 }}));
+//        possibleTwins.add(new Board(
+//                new int[][] {{ 1, 3, 2 }, { 4, 5, 6 }, { 7, 0, 8 }}));
+//        possibleTwins.add(new Board(
+//                new int[][] {{ 1, 2, 3 }, { 5, 4, 6 }, { 7, 0, 8 }}));
+//        possibleTwins.add(new Board(
+//                new int[][] {{ 1, 2, 3 }, { 4, 6, 5 }, { 7, 0, 8 }}));
+//        possibleTwins.add(new Board(
+//                new int[][] {{ 1, 2, 3 }, { 4, 6, 5 }, { 0, 7, 8 }}));
+//        possibleTwins.add(new Board(
+//                new int[][] {{ 1, 2, 3 }, { 4, 6, 5 }, { 7, 8, 0 }}));
+        
+//        while (!possibleTwins.isEmpty()) {
+//            Board twin = b.twin();
+//            Assert.assertTrue(
+//                String.format("Twin '%s' should be in possibleTwins", twin),
+//                possibleTwins.contains(twin));
+////            possibleTwins.remove(twin);
+//        }
+    }
 
     @Test
     public void testTwin() {
@@ -268,6 +322,7 @@ public class BoardTests {
         final Board b2 = new Board(a1t8);
         Assert.assertEquals(b, b);
         Assert.assertEquals(b, b2);
+        Assert.assertEquals(goal, b);
     }
     
     @Test
@@ -467,24 +522,24 @@ public class BoardTests {
         );
     }
     
-    @Test
-    public void testCompareToLT() {
-        // A hamming is 7, B's is 1
-        Assert.assertEquals(-1, B.compareTo(A));
-        Assert.assertEquals(-1, bGoal.compareTo(A));
-    }
-    
-    @Test
-    public void testCompareToGT() {
-        Assert.assertEquals(1, A.compareTo(B));
-        Assert.assertEquals(1, A.compareTo(bGoal));
-    }
-    
-    @Test
-    public void testCompareToEqual() {
-        Assert.assertEquals(0, A.compareTo(A));
-        Assert.assertEquals(0, bGoal.compareTo(bGoal));
-    }
+//    @Test
+//    public void testCompareToLT() {
+//        // A hamming is 7, B's is 1
+//        Assert.assertEquals(-1, B.compareTo(A));
+//        Assert.assertEquals(-1, bGoal.compareTo(A));
+//    }
+//    
+//    @Test
+//    public void testCompareToGT() {
+//        Assert.assertEquals(1, A.compareTo(B));
+//        Assert.assertEquals(1, A.compareTo(bGoal));
+//    }
+//    
+//    @Test
+//    public void testCompareToEqual() {
+//        Assert.assertEquals(0, A.compareTo(A));
+//        Assert.assertEquals(0, bGoal.compareTo(bGoal));
+//    }
 
     public static Board buildBoard(int[] data) {
         int N = (int) Math.sqrt(data.length);
