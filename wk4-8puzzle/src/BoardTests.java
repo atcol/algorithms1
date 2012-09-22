@@ -88,7 +88,7 @@ public class BoardTests {
         final Board b = new Board(a);
         Assert.assertEquals(10, b.manhattan());
         Assert.assertEquals(0, new Board(new int[0][0]).manhattan());
-        Assert.assertEquals(0, bGoal.manhattan());
+        Assert.assertEquals(0, new Board(this.goalBoard).manhattan());
     }
     
     @Test
@@ -169,14 +169,6 @@ public class BoardTests {
     public void testTwin3x3() {
         final int[][] brdArray = {{ 1, 2, 3 }, { 4, 5, 6 }, { 7, 0, 8 }};
         final Board b = new Board(brdArray);
-//        final List<Board> possibleTwins = new ArrayList<Board>();
-        
-//        possibleTwins.add(new Board(
-//              new int[][] {{ 2, 1, 3 }, { 4, 5, 6 }, { 7, 0, 8 }}));
-//        possibleTwins.add(new Board(
-//              new int[][] {{ 1, 2, 3 }, { 5, 4, 6 }, { 7, 0, 8 }}));
-//        possibleTwins.add(new Board(
-//              new int[][] {{ 1, 2, 3 }, { 4, 6, 5 }, { 0, 7, 8 }}));
         
         final Board twin = new Board(
               new int[][] {{ 2, 1, 3 }, { 4, 5, 6 }, { 7, 0, 8 }});
@@ -186,26 +178,16 @@ public class BoardTests {
                     twin, actualTwin);
         }
 
-//        possibleTwins.add(new Board(
-//                new int[][] {{ 2, 1, 3 }, { 4, 5, 6 }, { 7, 0, 8 }}));
-//        possibleTwins.add(new Board(
-//                new int[][] {{ 1, 3, 2 }, { 4, 5, 6 }, { 7, 0, 8 }}));
-//        possibleTwins.add(new Board(
-//                new int[][] {{ 1, 2, 3 }, { 5, 4, 6 }, { 7, 0, 8 }}));
-//        possibleTwins.add(new Board(
-//                new int[][] {{ 1, 2, 3 }, { 4, 6, 5 }, { 7, 0, 8 }}));
-//        possibleTwins.add(new Board(
-//                new int[][] {{ 1, 2, 3 }, { 4, 6, 5 }, { 0, 7, 8 }}));
-//        possibleTwins.add(new Board(
-//                new int[][] {{ 1, 2, 3 }, { 4, 6, 5 }, { 7, 8, 0 }}));
-        
-//        while (!possibleTwins.isEmpty()) {
-//            Board twin = b.twin();
-//            Assert.assertTrue(
-//                String.format("Twin '%s' should be in possibleTwins", twin),
-//                possibleTwins.contains(twin));
-////            possibleTwins.remove(twin);
-//        }
+        // Now test that the switch is on 2nd row because 0 is on 1st
+        final int[][] brdArray2 = {{ 0, 2, 3 }, { 4, 5, 6 }, { 7, 1, 8 }};
+        final Board b2 = new Board(brdArray2);
+        final Board twin2 = new Board(
+              new int[][] {{ 0, 2, 3 }, { 5, 4, 6 }, { 7, 1, 8 }});
+        for (int i = 0; i < 100; i++) {
+            final Board actualTwin = b2.twin();
+            Assert.assertEquals("actualTwin = " + actualTwin,
+                    twin2, actualTwin);
+        }
     }
 
     @Test

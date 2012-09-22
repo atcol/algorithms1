@@ -155,30 +155,23 @@ public class Board {
     } // is this board the goal board?
 
     public Board twin() {
-        int x = StdRandom.uniform(N);
-        int y = StdRandom.uniform(N);
-
-        while (b[x][y] == 0) {
-            x = StdRandom.uniform(N);
-            y = StdRandom.uniform(N);
+        final Block z = findZero();
+        
+        int x = 0;
+        
+        if (z.x == 0) {
+            x = 1;
         }
-
-        final int block = b[x][y];
+        
         final int[][] blocks = new int[b.length][b.length];
         copy(this.b, blocks);
+        final int block = blocks[x][0];
         
-        // now find adjacent
-        if (y+1 < N) {
-            // swap with block below
-            final int swap = blocks[x][y+1];
-            blocks[x][y+1] = block;
-            blocks[x][y] = swap;
-        } else if (y-1 >= 0) {
-            // swap with block above
-            final int swap = blocks[x][y-1];
-            blocks[x][y-1] = block;
-            blocks[x][y] = swap;
-        }
+        // swap block (x, 0) with block (x, 1)
+        int swap = b[x][1];
+        blocks[x][0] = swap;
+        blocks[x][1] = block;
+        
         return new Board(blocks, false);
     } // a board obtained by exchanging two adjacent blocks in the same row
 
@@ -188,7 +181,7 @@ public class Board {
 
     @Override
     public String toString() {
-        StringBuilder s = new StringBuilder();
+        final StringBuilder s = new StringBuilder();
         s.append(N + "\n");
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -232,7 +225,7 @@ public class Board {
         return Math.abs(block - (bX * N));
     }
 
-    private int toX(final float block) {
+    private int toX(final int block) {
         return Math.round(block / N);
     }
 

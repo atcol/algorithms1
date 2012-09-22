@@ -1,0 +1,2 @@
+#!/bin/bash
+cd bin; java -Xmx1024m -cp .:../../algs4.jar:../../stdlib.jar Solver $*
