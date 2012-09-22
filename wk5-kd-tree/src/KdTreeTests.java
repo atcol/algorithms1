@@ -47,6 +47,55 @@ public class KdTreeTests {
         kdtree.insert(randomPoint);
         Assert.assertTrue(kdtree.contains(randomPoint));
     }
+    
+    @Test
+    public void testInsert() {
+        final KdTree kdtree = new KdTree();
+        final Point2D randomPoint = buildRandomPoint();
+
+        // Insert One
+        kdtree.insert(randomPoint);
+        Assert.assertTrue(kdtree.contains(randomPoint));
+        Assert.assertEquals(1, kdtree.size());
+    }
+    
+    @Test
+    public void testInsert10() {
+        final KdTree kdtree = new KdTree();
+        final Point2D randomPoint = buildRandomPoint();
+
+        final int N = 10;
+        int count = 0;
+        for (int i = 0; i < N; i++) {
+            final Point2D point = buildRandomPoint();
+            kdtree.insert(point);
+            count++;
+            Assert.assertEquals(count, kdtree.size());
+//            final boolean contains = kdtree.contains(point);
+//            Assert.assertTrue("Iteration " + i + " contains " + point,
+//                    contains);
+        }
+        kdtree.insert(randomPoint);
+//        Assert.assertTrue(kdtree.contains(randomPoint));
+        Assert.assertEquals(11, kdtree.size());
+    }
+    
+    @Test
+    public void testInsert10k() {
+        final KdTree kdtree = new KdTree();
+        final Point2D randomPoint = buildRandomPoint();
+
+        final int N = 10000;
+        int count = 0;
+        for (int i = 0; i < N; i++) {
+            kdtree.insert(buildRandomPoint());
+            count++;
+            Assert.assertEquals(count, kdtree.size());
+        }
+        kdtree.insert(randomPoint);
+//        Assert.assertTrue(kdtree.contains(randomPoint));
+        Assert.assertEquals(10001, kdtree.size());
+    }
 
     @Test
     public void testSize10() {
@@ -127,6 +176,56 @@ public class KdTreeTests {
         Assert.assertFalse(kdtree.isEmpty());
         Assert.assertEquals(set.size(), kdtree.size());
     }
+    
+    @Test
+    public void testContains3() {
+        final KdTree kdtree = new KdTree();
+        final Point2D randomPoint = buildRandomPoint();
+
+        // Insert One
+        kdtree.insert(randomPoint);
+        Assert.assertTrue(kdtree.contains(randomPoint));
+        Assert.assertEquals(1, kdtree.size());
+        
+        final Point2D anotherRandPnt = buildRandomPoint();
+        kdtree.insert(anotherRandPnt);
+        Assert.assertTrue(kdtree.contains(anotherRandPnt));
+        
+        final Point2D yetAnotherRandPnt = buildRandomPoint();
+        kdtree.insert(yetAnotherRandPnt);
+        Assert.assertTrue(kdtree.contains(yetAnotherRandPnt));
+    }
+    
+    @Test
+    public void testContains10() {
+        final HashSet<Point2D> set = new HashSet<Point2D>();
+        final KdTree kdtree = new KdTree();
+
+        // Empty
+        Assert.assertTrue(kdtree.isEmpty());
+        Assert.assertEquals(0, kdtree.size());
+
+        Point2D point;
+        final int N = 10;
+        for (int i = 0; i < N; i++) {
+//            point = new Point2D(i/2, i/3);
+            point = buildRandomPoint();
+            set.add(point);
+            kdtree.insert(point);
+        }
+        
+        Assert.assertEquals(N, kdtree.size());
+
+        Iterator<Point2D> i = set.iterator();
+        while (i.hasNext()) {
+            point = i.next();
+            final boolean contains = kdtree.contains(point);
+            Assert.assertTrue("Must contain " + point, contains);
+        }
+
+        Assert.assertFalse(kdtree.isEmpty());
+        Assert.assertEquals(set.size(), kdtree.size());
+    }
 
     @Test
     public void testContains1k() {
@@ -138,16 +237,20 @@ public class KdTreeTests {
         Assert.assertEquals(0, kdtree.size());
 
         Point2D point;
-        for (int i = 0; i < 1000; i++) {
+        final int N = 1000;
+        for (int i = 0; i < N; i++) {
+//            point = new Point2D(i/2, i/3);
             point = buildRandomPoint();
             set.add(point);
             kdtree.insert(point);
         }
+        
+        Assert.assertEquals(N, kdtree.size());
 
         Iterator<Point2D> i = set.iterator();
         while (i.hasNext()) {
             point = i.next();
-            Assert.assertTrue(kdtree.contains(point));
+            Assert.assertTrue("Must contain " + point, kdtree.contains(point));
         }
 
         Assert.assertFalse(kdtree.isEmpty());
@@ -291,13 +394,11 @@ public class KdTreeTests {
 
     @Test
     public void testRange() {
-        // As per assignment,
-        // http://coursera.cs.princeton.edu/algs4/assignments/kdtree.html
-        Point2D point1 = new Point2D(0.1, 0.4);
-        Point2D point2 = new Point2D(0.0, 0.0);
-        Point2D point3 = new Point2D(0.6, 0.5);
+        final Point2D point1 = new Point2D(0.1, 0.4);
+        final Point2D point2 = new Point2D(0.0, 0.0);
+        final Point2D point3 = new Point2D(0.6, 0.5);
 
-        PointSET set = new PointSET();
+        final PointSET set = new PointSET();
         set.insert(point1);
         set.insert(point2);
         set.insert(point3);
@@ -306,7 +407,7 @@ public class KdTreeTests {
         kdtree.insert(point2);
         kdtree.insert(point3);
 
-        RectHV rect = new RectHV(0.4, 0.3, 0.8, 0.6);
+        final RectHV rect = new RectHV(0.4, 0.3, 0.8, 0.6);
         Assert.assertTrue(compareIterable(set.range(rect), kdtree.range(rect)));
     }
 
