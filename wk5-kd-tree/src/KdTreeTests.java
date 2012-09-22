@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class KdTreeTests {
+    
     @Test
     public void testEmpty() {
         final KdTree kdtree = new KdTree();
@@ -15,14 +16,23 @@ public class KdTreeTests {
 
         // Empty
         Assert.assertTrue(kdtree.isEmpty());
-        Assert.assertEquals(0, kdtree.size());
-        Assert.assertFalse(kdtree.contains(randomPoint));
 
         // Insert One
         kdtree.insert(randomPoint);
         Assert.assertFalse(kdtree.isEmpty());
+    }
+    
+    @Test
+    public void testSize() {
+        final KdTree kdtree = new KdTree();
+        final Point2D randomPoint = buildRandomPoint();
+
+        // Empty
+        Assert.assertEquals(0, kdtree.size());
+
+        // Insert One
+        kdtree.insert(randomPoint);
         Assert.assertEquals(1, kdtree.size());
-        Assert.assertTrue(kdtree.contains(randomPoint));
     }
 
     @Test
@@ -244,7 +254,7 @@ public class KdTreeTests {
         /*
          * circle10.txt
          */
-        String filename = "kdtree/circle10.txt";
+        String filename = "data/circle10.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -308,7 +318,7 @@ public class KdTreeTests {
         /*
          * input10K.txt
          */
-        String filename = "kdtree/input10K.txt";
+        String filename = "data/input10K.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -350,7 +360,7 @@ public class KdTreeTests {
         /*
          * input20K.txt
          */
-        String filename = "kdtree/input20K.txt";
+        String filename = "data/input20K.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -392,7 +402,7 @@ public class KdTreeTests {
         /*
          * input40K.txt
          */
-        String filename = "kdtree/input40K.txt";
+        String filename = "data/input40K.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -434,7 +444,7 @@ public class KdTreeTests {
         /*
          * circle100.txt
          */
-        String filename = "kdtree/circle100.txt";
+        String filename = "data/circle100.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -476,7 +486,7 @@ public class KdTreeTests {
         /*
          * circle1000.txt
          */
-        String filename = "kdtree/circle1000.txt";
+        String filename = "data/circle1000.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -518,7 +528,7 @@ public class KdTreeTests {
         /*
          * circle10000.txt
          */
-        String filename = "kdtree/circle10000.txt";
+        String filename = "data/circle10000.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -576,7 +586,7 @@ public class KdTreeTests {
         /*
          * input10K.txt
          */
-        String filename = "kdtree/input10K.txt";
+        String filename = "data/input10K.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -613,7 +623,7 @@ public class KdTreeTests {
         /*
          * input20K.txt
          */
-        String filename = "kdtree/input20K.txt";
+        String filename = "data/input20K.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -650,7 +660,7 @@ public class KdTreeTests {
         /*
          * input40K.txt
          */
-        String filename = "kdtree/input40K.txt";
+        String filename = "data/input40K.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -687,7 +697,7 @@ public class KdTreeTests {
         /*
          * circle100.txt
          */
-        String filename = "kdtree/circle100.txt";
+        String filename = "data/circle100.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -724,7 +734,7 @@ public class KdTreeTests {
         /*
          * circle1000.txt
          */
-        String filename = "kdtree/circle1000.txt";
+        String filename = "data/circle1000.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {
@@ -761,7 +771,7 @@ public class KdTreeTests {
         /*
          * circle10000.txt
          */
-        String filename = "kdtree/circle10000.txt";
+        String filename = "data/circle10000.txt";
         In in = new In(filename);
 
         while (!in.isEmpty()) {

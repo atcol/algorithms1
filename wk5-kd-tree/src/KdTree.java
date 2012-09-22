@@ -1,33 +1,45 @@
 public class KdTree {
     private static class Node {
-        private Point2D p;
+        private final Point2D p;
         private RectHV rect;
         private Node lb;
         private Node rt;
+
+        public Node(final Point2D p) {
+            this.p = p;
+        }
     }
 
-    private final int N;
-    private final Node root;
+    private Node root;
+    private int N;
     
     public KdTree() {
         // construct an empty set of points
+        N = 0;
     }
 
     public boolean isEmpty() {
         // is the set empty?
-        return false;
+        return root == null;
     }
 
     public int size() {
         // number of points in the set
-        return Integer.MIN_VALUE;
+        return N;
     }
 
-    public void insert(Point2D p) {
+    public void insert(final Point2D p) {
         // add the point p to the set (if it is not already in the set) {
+        N++;
+        if (root == null) {
+            root = new Node(p);
+            return; // for maintenance safety
+        } else if (!contains(p)) {
+            // do somin'
+        }
     }
 
-    public boolean contains(Point2D p) {
+    public boolean contains(final Point2D p) {
         // does the set contain the point p?
         return false;
     }
