@@ -419,6 +419,47 @@ public class KdTreeTests {
         final RectHV rect = new RectHV(0.4, 0.3, 0.8, 0.6);
         compareIterable(set.range(rect), kdtree.range(rect));
     }
+    
+    @Test
+    public void testRange1k() {
+        PointSET set = new PointSET();
+        KdTree kdtree = new KdTree();
+
+        /*
+         * input10K.txt
+         */
+        String filename = "data/input1K.txt";
+        In in = new In(filename);
+
+        while (!in.isEmpty()) {
+            double x = in.readDouble();
+            double y = in.readDouble();
+            Point2D p = new Point2D(x, y);
+            kdtree.insert(p);
+            set.insert(p);
+        }
+
+        // testing size()
+        Assert.assertEquals(set.size(), kdtree.size());
+
+        RectHV rect;
+        // testing range() with [0.0, 0.81] x [0.0, 0.3]
+        rect = new RectHV(0.0, 0.3, 0.0, 0.81);
+        compareIterable(set.range(rect), kdtree.range(rect));
+
+        double x0, y0, x1, y1;
+        for (int i = 0; i < 4000; i++) {
+            x0 = StdRandom.random();
+            y0 = StdRandom.random();
+            x1 = StdRandom.random();
+            y1 = StdRandom.random();
+
+            rect = new RectHV(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0,
+                    x1), Math.max(y0, y1));
+
+            compareIterable(set.range(rect), kdtree.range(rect));
+        }
+    }
 
     @Test
     public void testRange10k() {

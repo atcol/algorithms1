@@ -17,7 +17,8 @@ public class KdTree {
         
         private void range(final Node n, final RectHV r,
                 final List<Point2D> points) {
-            if (r.contains(n.p) && n.rect.intersects(r)) points.add(n.p);
+//            if (r.contains(n.p) && n.rect.intersects(r)) points.add(n.p);
+            if (r.contains(n.p)) points.add(n.p);
             if (n.lb != null) range(n.lb, r, points);
             if (n.rt != null) range(n.rt, r, points);
         }
@@ -49,7 +50,6 @@ public class KdTree {
             this.p = p;
             this.levelOdd = levelOdd;
             this.rect = newRect;
-//            System.out.printf("%s rect is %s\n", p, this.rect);
         }
 
         @Override
@@ -162,42 +162,35 @@ public class KdTree {
     }
 
     public Point2D nearest(final Point2D p) {
-        // a nearest neighbor in the set to p; null if set is empty
+        // a nearest neighbour in the set to p; null if set is empty
         if (isEmpty()) return null;
         return nearest(root, root.p, p);
     }
     
     private boolean less(final boolean levelOdd, final Point2D p, final Point2D q) {
-        if (!levelOdd) return p.y() <= q.y();
+        if (!levelOdd) return p.y() < q.y();
         else return p.x() <= q.x();
     }
     
     private Node parent(final Node n, final Point2D p) {
         if (n == null) return n;
         if (less(n.levelOdd, p, n.p)) {
-            if (n.lb == null) {
-                return n;
-            } else {
-                return parent(n.lb, p);
-            }
+            if (n.lb == null) return n;
+            else return parent(n.lb, p);
         } else {
-            if (n.rt == null) {
-                return n;
-            } else {
-                return parent(n.rt, p);
-            }
+            if (n.rt == null) return n;
+            else return parent(n.rt, p);
         }
-        
     }
     
     private Point2D nearest(final Node n, final Point2D c, final Point2D p) {
         Point2D nr = c;
-        if (n.lb != null) if (greater(n.lb, c, p)) nr = nearest(n.lb, n.lb.p, p);
-        if (n.rt != null) if (greater(n.rt, c, p)) nr = nearest(n.rt, n.rt.p, p);
+        if (n.lb != null) if (greater(c, n.lb, p)) nr = nearest(n.lb, n.lb.p, p);
+        if (n.rt != null) if (greater(c, n.rt, p)) nr = nearest(n.rt, n.rt.p, p);
         return nr;
     }
 
-    private boolean greater(final Node n, final Point2D c, final Point2D p) {
-        return c.distanceTo(p) > n.rect.distanceTo(p);
+    private boolean greater(final Point2D c, final Node n, final Point2D p) {
+        return c.distanceTo(p) > n.p.distanceTo(p);
     }
 }
