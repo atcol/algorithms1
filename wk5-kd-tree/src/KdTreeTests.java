@@ -216,23 +216,24 @@ public class KdTreeTests {
         Point2D point;
         final int N = 10;
         for (int i = 0; i < N; i++) {
-//            point = new Point2D(i/2, i/3);
             point = buildRandomPoint();
             set.add(point);
             kdtree.insert(point);
+            final boolean contains = kdtree.contains(point);
+            Assert.assertTrue("Must contain " + point, contains);
         }
         
         Assert.assertEquals(N, kdtree.size());
 
-        Iterator<Point2D> i = set.iterator();
-        while (i.hasNext()) {
-            point = i.next();
-            final boolean contains = kdtree.contains(point);
-            Assert.assertTrue("Must contain " + point, contains);
-        }
+//        Iterator<Point2D> i = set.iterator();
+//        while (i.hasNext()) {
+//            point = i.next();
+//            final boolean contains = kdtree.contains(point);
+//            Assert.assertTrue("Must contain " + point, contains);
+//        }
 
         Assert.assertFalse(kdtree.isEmpty());
-        Assert.assertEquals(set.size(), kdtree.size());
+//        Assert.assertEquals(set.size(), kdtree.size());
     }
 
     @Test
@@ -389,7 +390,7 @@ public class KdTreeTests {
 
         // testing range() with [0.0, 0.81] x [0.0, 0.3]
         RectHV rect = new RectHV(0.0, 0.3, 0.0, 0.81);
-        Assert.assertTrue(compareIterable(set.range(rect), kdtree.range(rect)));
+        compareIterable(set.range(rect), kdtree.range(rect));
 
         // testing nearest() with (0.81, 0.3)
         Point2D point1 = new Point2D(0.81, 0.3);
@@ -416,7 +417,7 @@ public class KdTreeTests {
         kdtree.insert(point3);
 
         final RectHV rect = new RectHV(0.4, 0.3, 0.8, 0.6);
-        Assert.assertTrue(compareIterable(set.range(rect), kdtree.range(rect)));
+        compareIterable(set.range(rect), kdtree.range(rect));
     }
 
     @Test
@@ -444,7 +445,7 @@ public class KdTreeTests {
         RectHV rect;
         // testing range() with [0.0, 0.81] x [0.0, 0.3]
         rect = new RectHV(0.0, 0.3, 0.0, 0.81);
-        Assert.assertTrue(compareIterable(set.range(rect), kdtree.range(rect)));
+        compareIterable(set.range(rect), kdtree.range(rect));
 
         double x0, y0, x1, y1;
         for (int i = 0; i < 4000; i++) {
@@ -456,8 +457,7 @@ public class KdTreeTests {
             rect = new RectHV(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0,
                     x1), Math.max(y0, y1));
 
-            Assert.assertTrue(compareIterable(set.range(rect),
-                    kdtree.range(rect)));
+            compareIterable(set.range(rect), kdtree.range(rect));
         }
     }
 
@@ -486,7 +486,7 @@ public class KdTreeTests {
         RectHV rect;
         // testing range() with [0.0, 0.81] x [0.0, 0.3]
         rect = new RectHV(0.0, 0.3, 0.0, 0.81);
-        Assert.assertTrue(compareIterable(set.range(rect), kdtree.range(rect)));
+        compareIterable(set.range(rect), kdtree.range(rect));
 
         double x0, y0, x1, y1;
         for (int i = 0; i < 4000; i++) {
@@ -498,8 +498,7 @@ public class KdTreeTests {
             rect = new RectHV(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0,
                     x1), Math.max(y0, y1));
 
-            Assert.assertTrue(compareIterable(set.range(rect),
-                    kdtree.range(rect)));
+            compareIterable(set.range(rect), kdtree.range(rect));
         }
     }
 
@@ -528,7 +527,7 @@ public class KdTreeTests {
         RectHV rect;
         // testing range() with [0.0, 0.81] x [0.0, 0.3]
         rect = new RectHV(0.0, 0.3, 0.0, 0.81);
-        Assert.assertTrue(compareIterable(set.range(rect), kdtree.range(rect)));
+        compareIterable(set.range(rect), kdtree.range(rect));
 
         double x0, y0, x1, y1;
         for (int i = 0; i < 4000; i++) {
@@ -540,8 +539,7 @@ public class KdTreeTests {
             rect = new RectHV(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0,
                     x1), Math.max(y0, y1));
 
-            Assert.assertTrue(compareIterable(set.range(rect),
-                    kdtree.range(rect)));
+            compareIterable(set.range(rect), kdtree.range(rect));
         }
     }
 
@@ -570,7 +568,7 @@ public class KdTreeTests {
         RectHV rect;
         // testing range() with [0.0, 0.81] x [0.0, 0.3]
         rect = new RectHV(0.0, 0.3, 0.0, 0.81);
-        Assert.assertTrue(compareIterable(set.range(rect), kdtree.range(rect)));
+        compareIterable(set.range(rect), kdtree.range(rect));
 
         double x0, y0, x1, y1;
         for (int i = 0; i < 4000; i++) {
@@ -582,8 +580,7 @@ public class KdTreeTests {
             rect = new RectHV(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0,
                     x1), Math.max(y0, y1));
 
-            Assert.assertTrue(compareIterable(set.range(rect),
-                    kdtree.range(rect)));
+            compareIterable(set.range(rect), kdtree.range(rect));
         }
     }
 
@@ -612,7 +609,7 @@ public class KdTreeTests {
         RectHV rect;
         // testing range() with [0.0, 0.81] x [0.0, 0.3]
         rect = new RectHV(0.0, 0.3, 0.0, 0.81);
-        Assert.assertTrue(compareIterable(set.range(rect), kdtree.range(rect)));
+        compareIterable(set.range(rect), kdtree.range(rect));
 
         double x0, y0, x1, y1;
         for (int i = 0; i < 4000; i++) {
@@ -624,8 +621,7 @@ public class KdTreeTests {
             rect = new RectHV(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0,
                     x1), Math.max(y0, y1));
 
-            Assert.assertTrue(compareIterable(set.range(rect),
-                    kdtree.range(rect)));
+            compareIterable(set.range(rect), kdtree.range(rect));
         }
     }
 
@@ -654,7 +650,7 @@ public class KdTreeTests {
         RectHV rect;
         // testing range() with [0.0, 0.81] x [0.0, 0.3]
         rect = new RectHV(0.0, 0.3, 0.0, 0.81);
-        Assert.assertTrue(compareIterable(set.range(rect), kdtree.range(rect)));
+        compareIterable(set.range(rect), kdtree.range(rect));
 
         double x0, y0, x1, y1;
         for (int i = 0; i < 4000; i++) {
@@ -666,8 +662,7 @@ public class KdTreeTests {
             rect = new RectHV(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0,
                     x1), Math.max(y0, y1));
 
-            Assert.assertTrue(compareIterable(set.range(rect),
-                    kdtree.range(rect)));
+            compareIterable(set.range(rect), kdtree.range(rect));
         }
     }
 
@@ -683,7 +678,7 @@ public class KdTreeTests {
         kdtree.insert(point1);
         kdtree.insert(point2);
 
-        Point2D nearest = kdtree.nearest(point3);
+        final Point2D nearest = kdtree.nearest(point3);
         Assert.assertEquals(point1, nearest);
     }
 
@@ -921,12 +916,11 @@ public class KdTreeTests {
         return new Point2D(StdRandom.random(), StdRandom.random());
     }
 
-    public static boolean compareIterable(Iterable<Point2D> points1,
+    public static void compareIterable(Iterable<Point2D> points1,
             Iterable<Point2D> points2) {
         int N1 = count(points1);
         int N2 = count(points2);
-        if (N1 != N2)
-            return false;
+        Assert.assertEquals("Range N must match", N1, N2);
 
         Point2D[] arr1 = new Point2D[N1];
         Point2D[] arr2 = new Point2D[N2];
@@ -936,9 +930,8 @@ public class KdTreeTests {
         Arrays.sort(arr2);
         for (int i = 0; i < N1; i++) {
             if (0 != arr1[i].compareTo(arr2[i]))
-                return false;
+                Assert.assertEquals("Item " + i + "must match", arr1[i], arr2[i]);
         }
-        return true;
     }
 
     public static <Type> void fromIterableToArray(Iterable<Type> i, Type[] a) {
