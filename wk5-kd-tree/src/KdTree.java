@@ -114,7 +114,7 @@ public class KdTree {
         if (p.equals(root.p)) return true;
         return find(root, p) != null;
     }
-    
+
     private Node find(final Node n, final Point2D p) {
         if (n == null) return null;
         if (p.equals(n.p)) return n;
@@ -128,9 +128,8 @@ public class KdTree {
         }
         return node;
     }
-    
+ 
     public void draw() {
-        // draw all of the points to standard draw
         draw(root);
     }
 
@@ -139,7 +138,6 @@ public class KdTree {
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.setPenRadius(PEN_RADIUS);
         StdDraw.point(n.p.x(), n.p.y());
-//        StdDraw.text(n.p.x() + 0.05d, n.p.y(), "" + i);
         StdDraw.setPenRadius();
 
         if (!n.levelOdd) StdDraw.setPenColor(StdDraw.BLUE); // horiz
@@ -166,12 +164,12 @@ public class KdTree {
         if (isEmpty()) return null;
         return nearest(root, root.p, p);
     }
-    
+
     private boolean less(final boolean levelOdd, final Point2D p, final Point2D q) {
         if (!levelOdd) return p.y() < q.y();
         else return p.x() <= q.x();
     }
-    
+ 
     private Node parent(final Node n, final Point2D p) {
         if (n == null) return n;
         if (less(n.levelOdd, p, n.p)) {
@@ -182,12 +180,13 @@ public class KdTree {
             else return parent(n.rt, p);
         }
     }
-    
+ 
     private Point2D nearest(final Node n, final Point2D c, final Point2D p) {
-        Point2D nr = c;
-        if (n.lb != null) if (greater(c, n.lb, p)) nr = nearest(n.lb, n.lb.p, p);
-        if (n.rt != null) if (greater(c, n.rt, p)) nr = nearest(n.rt, n.rt.p, p);
-        return nr;
+        Point2D nrl = c, nrr = c;
+        if (n.lb != null) if (greater(c, n.lb, p)) nrl = nearest(n.lb, n.lb.p, p);
+        if (n.rt != null) if (greater(c, n.rt, p)) nrr = nearest(n.rt, n.rt.p, p);
+        if (nrl.distanceTo(p) > nrr.distanceTo(p)) return nrr;
+        else return nrl;
     }
 
     private boolean greater(final Point2D c, final Node n, final Point2D p) {
