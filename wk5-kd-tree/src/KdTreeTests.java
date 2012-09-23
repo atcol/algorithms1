@@ -3,6 +3,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -178,22 +179,29 @@ public class KdTreeTests {
     }
     
     @Test
-    public void testContains3() {
+    public void testContains4() {
         final KdTree kdtree = new KdTree();
-        final Point2D randomPoint = buildRandomPoint();
+        final Point2D pnt1 = new Point2D(0.1d, 0.1d);
 
         // Insert One
-        kdtree.insert(randomPoint);
-        Assert.assertTrue(kdtree.contains(randomPoint));
+        kdtree.insert(pnt1); // inserts at root
+        Assert.assertTrue(kdtree.contains(pnt1));
         Assert.assertEquals(1, kdtree.size());
         
-        final Point2D anotherRandPnt = buildRandomPoint();
-        kdtree.insert(anotherRandPnt);
-        Assert.assertTrue(kdtree.contains(anotherRandPnt));
+        final Point2D pnt2 = new Point2D(0.02d, 0.02d);
+        kdtree.insert(pnt2); // inserts @ root.lb
+        Assert.assertTrue(kdtree.contains(pnt2));
+        Assert.assertEquals(2, kdtree.size());
         
-        final Point2D yetAnotherRandPnt = buildRandomPoint();
-        kdtree.insert(yetAnotherRandPnt);
-        Assert.assertTrue(kdtree.contains(yetAnotherRandPnt));
+        final Point2D pnt3 = new Point2D(0.3d, 0.3d);
+        kdtree.insert(pnt3); // inserts @ root.rt
+        Assert.assertTrue(kdtree.contains(pnt3));
+        Assert.assertEquals(3, kdtree.size());
+        
+        final Point2D pnt4 = new Point2D(0.004d, 0.004d);
+        kdtree.insert(pnt4); // inserts @ root.lb.lb
+        Assert.assertTrue(kdtree.contains(pnt4));
+        Assert.assertEquals(4, kdtree.size());
     }
     
     @Test
@@ -285,8 +293,8 @@ public class KdTreeTests {
 
     @Test
     public void testContainsNo1k() {
-        HashSet<Point2D> setIn = new HashSet<Point2D>();
-        HashSet<Point2D> setOut = new HashSet<Point2D>();
+        final Set<Point2D> setIn = new HashSet<Point2D>();
+        final Set<Point2D> setOut = new HashSet<Point2D>();
         KdTree kdtree = new KdTree();
 
         // Empty

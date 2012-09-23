@@ -4,14 +4,24 @@ import java.util.List;
 
 public class KdTree {
     
-    private static class PointIterator implements Iterator<Point2D> {
+    private static final double SPACE = 0.03d;
+    private static final double PEN_RADIUS = 0.016d;
+
+    private static class RangeIterator implements Iterator<Point2D> {
         private final Iterator<Point2D> it;
 
-        public PointIterator(final Node root, final RectHV r) {
+        public RangeIterator(final Node root, final RectHV r) {
             // all points in the set that are inside the rectangle
             final List<Point2D> points = new ArrayList<Point2D>();
-            Node n = root;
+            range(root, r, points);
             this.it = points.iterator();
+        }
+        
+        private void range(final Node n, final RectHV r,
+                final List<Point2D> points) {
+            if (n.rect.intersects(r)) points.add(n.p);
+            if (n.lb != null) range(n.lb, r, points);
+            if (n.rt != null) range(n.rt, r, points);
         }
         
         @Override
@@ -31,14 +41,21 @@ public class KdTree {
     }
 
     private static class Node {
+        private final boolean levelOdd;
         private final Point2D p;
         private final RectHV rect;
         private Node lb;
         private Node rt;
 
-        public Node(final Point2D p, final RectHV r) {
+        public Node(final Point2D p, final boolean levelOdd, final double d) {
             this.p = p;
-            this.rect = r;
+            this.levelOdd = levelOdd;
+            if (levelOdd) {
+                this.rect = new RectHV(p.x(), 0, p.x(), d);
+            } else {
+                this.rect = new RectHV(0, p.y(), d, p.y());
+            }
+//            System.out.printf("Rect is %s for node.p %s\n", this.rect, this.p);
         }
     }
 
@@ -64,50 +81,23 @@ public class KdTree {
         // add the point p to the set (if it is not already in the set) {
         N++;
         if (root == null) {
-            root = new Node(p, new RectHV(root.p.x(), 0, root.p.x(), N));
+            root = new Node(p, true, N);
             return; // for maintenance safety
         } else if (!contains(p)) {
-            // do somin'
-            // Select which tree to start with
-            Node n = root;
-            Node last = root;
-            if (p.x() < n.p.x()) {
-                n = root.lb;
-                if (n == null) {
-                    last.lb =
-                        new Node(p, new RectHV(last.lb.p.x(), 0, last.lb.p.x(), N));
-                    return;
-                }
+            // Starting at n = root, 
+            // if n.levelOdd, compare X
+            // else compare Y
+            // if p < n.p, go n.lb
+            // else if >=, go n.rt
+
+            final Node parent = parent(root, p);
+//            System.out.printf("parent.p is %s\n", parent.p);
+            if (less(parent.levelOdd, p, parent.p)) {
+                final Node node = new Node(p, !parent.levelOdd, parent.rect.ymax());
+                parent.lb = node;
             } else {
-                n = root.rt;
-                if (n == null) {
-                    last.rt = 
-                        new Node(p, new RectHV(0, last.rt.p.y(), N, last.rt.p.y()));
-                    return;
-                }
-            }
-            
-            int i = 2;
-            boolean mode = false;
-            while (n != null) {
-                mode = i % 2 == 0;
-                last = n;
-                final boolean isLess = less(mode, p, n.p);
-                if (isLess) {
-                    n = n.lb;
-                } else {
-                    // greater or same
-                    n = n.rt;
-                }
-                i++;
-            }
-            
-            if (mode) {
-                // go right
-                last.rt = new Node(p, new RectHV(0, p.y(), N, p.y()));
-            } else {
-                // go left
-                last.lb = new Node(p, new RectHV(p.x(), 0, p.x(), N));
+                final Node node = new Node(p, !parent.levelOdd, parent.rect.xmax());
+                parent.rt = node;
             }
         }
     }
@@ -136,63 +126,73 @@ public class KdTree {
     
     public void draw() {
         // draw all of the points to standard draw
-        int i = 1;
-        Node n = root;
-        while (n != null) {
-            StdDraw.setPenColor(StdDraw.BLACK);
-            StdDraw.point(n.p.x(), n.p.y());
-            
-            if (i % 2 == 0) StdDraw.setPenColor(StdDraw.BLUE); // horiz
-            else StdDraw.setPenColor(StdDraw.RED);
-            
-            StdDraw.line(n.rect.xmin(), n.rect.ymin(), n.rect.xmax(), n.rect.ymax());
-            n = n.lb;
-            i++;
-        }
-        
-        i = 1;
-        n = root.rt;
-        while (n != null) {
-            StdDraw.setPenColor(StdDraw.BLACK);
-            StdDraw.point(n.p.x(), n.p.y());
-            
-            if (i % 2 == 0) StdDraw.setPenColor(StdDraw.BLUE); // horiz
-            else StdDraw.setPenColor(StdDraw.RED);
-            
-            StdDraw.line(n.rect.xmin(), n.rect.ymin(), n.rect.xmax(), n.rect.ymax());
-            n = n.rt;
-            i++;
-        }
+        draw(root);
+    }
+
+    private void draw(Node n) {
+        if (n == null) return;
+        StdDraw.setPenColor(StdDraw.BLACK);
+        StdDraw.setPenRadius(PEN_RADIUS);
+        StdDraw.point(n.p.x(), n.p.y());
+//        StdDraw.text(n.p.x() + SPACE, n.p.y(), "" + ++i);
+        StdDraw.setPenRadius();
+
+        if (!n.levelOdd) StdDraw.setPenColor(StdDraw.BLUE); // horiz
+        else StdDraw.setPenColor(StdDraw.RED);
+        final RectHV r = n.rect;
+        StdDraw.line(r.xmin(), r.ymin(), r.xmax(), r.ymax());
+        draw(n.lb);
+        draw(n.rt);
     }
 
     public Iterable<Point2D> range(final RectHV rect) {
         // all points in the set that are inside the rectangle
-        return new Iterable<Point2D>() {
+        final Iterable<Point2D> iterable = new Iterable<Point2D>() {
             @Override
             public Iterator<Point2D> iterator() {
-                return new PointIterator(root, rect);
+                return new RangeIterator(root, rect);
             }
         };
+        return iterable;
     }
 
     public Point2D nearest(final Point2D p) {
         // a nearest neighbor in the set to p; null if set is empty
-        return null;
+        if (isEmpty()) return null;
+        return nearest(root, root.p, p);
     }
     
     private boolean less(final boolean checkY, final Point2D p, final Point2D q) {
         if (checkY) return p.y() <= q.y();
         else return p.x() <= q.x();
     }
-
-    public int compare(final int i, Point2D l, Point2D r) {
-        if (i % 2 != 0) {
-            if (l.x() < r.x()) return 1;
-            else if (l.x() > r.x()) return -1;
+    
+    private Node parent(final Node n, final Point2D p) {
+        if (n == null) return n;
+        if (less(n.levelOdd, p, n.p)) {
+            if (n.lb == null) {
+                return n;
+            } else {
+                return parent(n.lb, p);
+            }
         } else {
-            if (l.y() < r.y()) return 1;
-            else if (l.y() > r.y()) return -1;
+            if (n.rt == null) {
+                return n;
+            } else {
+                return parent(n.rt, p);
+            }
         }
-        return 0;
+        
+    }
+    
+    private Point2D nearest(final Node n, final Point2D c, final Point2D p) {
+        Point2D nr = c;
+        if (n.lb != null) if (greater(n.lb, c, p)) nr = nearest(n.lb, n.lb.p, p);
+        if (n.rt != null) if (greater(n.rt, c, p)) nr = nearest(n.rt, n.rt.p, p);
+        return nr;
+    }
+
+    private boolean greater(final Node n, final Point2D c, final Point2D p) {
+        return c.distanceTo(p) > n.rect.distanceTo(n.p);
     }
 }
